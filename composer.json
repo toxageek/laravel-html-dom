@@ -1,0 +1,27 @@
+{
+    "name": "toxageek/laravel-html-dom",
+    "description": "A fast, simple and reliable HTML document parser for Laravel. Created based on PHP Simple HTML DOM Parser",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Toxageek\\LaravelHtmlDom\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Haziyev Tofik",
+            "email": "toxageek@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Toxageek\\LaravelHtmlDom\\LaravelHtmlDomServiceProvider"
+            ]
+        }
+    }
+}
