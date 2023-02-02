@@ -188,7 +188,7 @@ class LaravelHtmlDomNode
             }
         }
 
-        if (isset($this->_[HDOM::INFO_END]) && $this->_[HDOM::INFO_END] != 0) {
+        if (isset($this->_[HDOM::INFO_END]) && $this->_[HDOM::INFO_END] !== 0) {
             $ret .= '</'.$this->tag.'>';
         }
 
