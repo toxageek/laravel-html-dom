@@ -10,7 +10,7 @@ class LaravelHtmlDom
     public ?LaravelHtmlDomNode $root = null;
 
     /**
-     * @var array
+     * @var LaravelHtmlDomNode[]
      */
     public array $nodes = [];
 
@@ -25,19 +25,19 @@ class LaravelHtmlDom
     public bool $lowercase = false;
 
     /**
-     * @var
+     * @var int|null
      */
-    public $original_size;
+    public ?int $original_size;
 
     /**
-     * @var
+     * @var int|null
      */
-    public $size;
+    public ?int $size;
 
     /**
-     * @var
+     * @var int|null
      */
-    protected $pos;
+    protected ?int $pos;
 
     /**
      * @var string|null
@@ -47,7 +47,7 @@ class LaravelHtmlDom
     /**
      * @var
      */
-    protected $char;
+    protected mixed $char;
 
     /**
      * @var int
@@ -55,9 +55,9 @@ class LaravelHtmlDom
     protected int $cursor;
 
     /**
-     * @var
+     * @var LaravelHtmlDomNode|null
      */
-    protected $parent;
+    protected ?LaravelHtmlDomNode $parent;
 
     /**
      * @var array
@@ -223,7 +223,7 @@ class LaravelHtmlDom
      * @param  bool  $lowercase
      * @param  bool  $stripRN
      * @param  int  $options
-     * @return $this
+     * @return LaravelHtmlDom
      */
     protected function load(
         $str,
@@ -310,10 +310,10 @@ class LaravelHtmlDom
     }
 
     /**
-     * @param $filepath
+     * @param  string  $filepath
      * @return string
      */
-    public function save($filepath = '')
+    public function save(string $filepath = ''): string
     {
         $ret = $this->root->innertext();
 
@@ -328,9 +328,9 @@ class LaravelHtmlDom
      * @param $selector
      * @param  int|null  $idx
      * @param  bool  $lowercase
-     * @return mixed
+     * @return array|LaravelHtmlDomNode|null
      */
-    public function find($selector, ?int $idx = null, bool $lowercase = false)
+    public function find($selector, ?int $idx = null, bool $lowercase = false): array|LaravelHtmlDomNode|null
     {
         return $this->root->find($selector, $idx, $lowercase);
     }
@@ -372,10 +372,10 @@ class LaravelHtmlDom
 
     /**
      * @param $str
-     * @param $lowercase
+     * @param  bool  $lowercase
      * @return void
      */
-    protected function prepare($str, $lowercase = true): void
+    protected function prepare($str, bool $lowercase = true): void
     {
         $this->clear();
 
@@ -424,7 +424,7 @@ class LaravelHtmlDom
     /**
      * @return mixed|string|null
      */
-    protected function parse_charset()
+    protected function parse_charset(): mixed
     {
 
         $charset = null;
@@ -940,11 +940,11 @@ class LaravelHtmlDom
     }
 
     /**
-     * @param $pattern
-     * @param $remove_tag
+     * @param string $pattern
+     * @param  bool  $remove_tag
      * @return void
      */
-    protected function remove_noise($pattern, $remove_tag = false): void
+    protected function remove_noise(string $pattern, bool $remove_tag = false): void
     {
         $count = preg_match_all(
             $pattern,
@@ -1082,25 +1082,25 @@ class LaravelHtmlDom
 
     /**
      * @param  int  $idx
-     * @return array|mixed|null
+     * @return LaravelHtmlDomNode|null
      */
-    public function childNodes(int $idx = -1): mixed
+    public function childNodes(int $idx = -1): ?LaravelHtmlDomNode
     {
         return $this->root->childNodes($idx);
     }
 
     /**
-     * @return mixed|null
+     * @return LaravelHtmlDomNode|null
      */
-    public function firstChild(): mixed
+    public function firstChild(): ?LaravelHtmlDomNode
     {
         return $this->root->first_child();
     }
 
     /**
-     * @return false|mixed|null
+     * @return LaravelHtmlDomNode|null
      */
-    public function lastChild(): mixed
+    public function lastChild(): ?LaravelHtmlDomNode
     {
         return $this->root->last_child();
     }
@@ -1108,9 +1108,9 @@ class LaravelHtmlDom
     /**
      * @param $name
      * @param $value
-     * @return mixed
+     * @return LaravelHtmlDomNode|null
      */
-    public function createElement($name, $value = null): mixed
+    public function createElement($name, $value = null): ?LaravelHtmlDomNode
     {
         return self::str_get_html("<$name>$value</$name>")?->firstChild();
     }
@@ -1242,37 +1242,38 @@ class LaravelHtmlDom
 
     /**
      * @param $value
-     * @return false|mixed
+     * @return LaravelHtmlDomNode|null
      */
-    public function createTextNode($value): mixed
+    public function createTextNode($value): ?LaravelHtmlDomNode
     {
-        return @end(self::str_get_html($value)->nodes);
+        $nodes = self::str_get_html($value)->nodes;
+        return $nodes[count($nodes) - 1] ?? null;
     }
 
     /**
      * @param $id
-     * @return mixed
+     * @return LaravelHtmlDomNode|null
      */
-    public function getElementById($id): mixed
+    public function getElementById($id): ?LaravelHtmlDomNode
     {
         return $this->find("#$id", 0);
     }
 
     /**
      * @param $id
-     * @param $idx
-     * @return mixed
+     * @param  int|null  $idx
+     * @return array|LaravelHtmlDomNode|null
      */
-    public function getElementsById($id, $idx = null): mixed
+    public function getElementsById($id, int $idx = null): array|LaravelHtmlDomNode|null
     {
         return $this->find("#$id", $idx);
     }
 
     /**
      * @param $name
-     * @return mixed
+     * @return array|LaravelHtmlDomNode|null
      */
-    public function getElementByTagName($name): mixed
+    public function getElementByTagName($name): array|LaravelHtmlDomNode|null
     {
         return $this->find($name, 0);
     }
@@ -1280,9 +1281,9 @@ class LaravelHtmlDom
     /**
      * @param $name
      * @param  int|null  $idx
-     * @return mixed
+     * @return array|LaravelHtmlDomNode|null
      */
-    public function getElementsByTagName($name, ?int $idx = -1): mixed
+    public function getElementsByTagName($name, ?int $idx = -1): array|LaravelHtmlDomNode|null
     {
         return $this->find($name, $idx);
     }

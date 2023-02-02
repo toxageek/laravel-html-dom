@@ -20,19 +20,19 @@ class LaravelHtmlDomNode
     public array $attr = [];
 
     /**
-     * @var array|null
+     * @var LaravelHtmlDomNode[]|null
      */
     public ?array $children = [];
 
     /**
-     * @var array|null
+     * @var LaravelHtmlDomNode[]|null
      */
     public ?array $nodes = [];
 
     /**
-     * @var
+     * @var LaravelHtmlDomNode|null
      */
-    public $parent;
+    public ?LaravelHtmlDomNode $parent;
 
     /**
      * @var array
@@ -86,10 +86,10 @@ class LaravelHtmlDomNode
     }
 
     /**
-     * @param $parent
-     * @return mixed
+     * @param  LaravelHtmlDomNode|null  $parent
+     * @return LaravelHtmlDomNode|null
      */
-    public function parent($parent = null): mixed
+    public function parent(LaravelHtmlDomNode $parent = null): ?LaravelHtmlDomNode
     {
         // I am SURE that this doesn't work properly.
         // It fails to unset the current node from it's current parents nodes or
@@ -113,9 +113,9 @@ class LaravelHtmlDomNode
 
     /**
      * @param  int  $idx
-     * @return array|mixed|null
+     * @return array|null|LaravelHtmlDomNode
      */
-    public function children(int $idx = -1): mixed
+    public function children(int $idx = -1): null|array|LaravelHtmlDomNode
     {
         if ($idx === -1) {
             return $this->children;
@@ -125,9 +125,9 @@ class LaravelHtmlDomNode
     }
 
     /**
-     * @return mixed|null
+     * @return LaravelHtmlDomNode|null
      */
-    public function first_child(): mixed
+    public function first_child(): ?LaravelHtmlDomNode
     {
         if (count($this->children) > 0) {
             return $this->children[0];
@@ -137,21 +137,21 @@ class LaravelHtmlDomNode
     }
 
     /**
-     * @return false|mixed|null
+     * @return LaravelHtmlDomNode|null
      */
-    public function last_child(): mixed
+    public function last_child(): ?LaravelHtmlDomNode
     {
         if (count($this->children) > 0) {
-            return end($this->children);
+            return $this->children[count($this->children) - 1];
         }
 
         return null;
     }
 
     /**
-     * @return mixed
+     * @return LaravelHtmlDomNode|null
      */
-    public function next_sibling(): mixed
+    public function next_sibling(): ?LaravelHtmlDomNode
     {
         if ($this->parent === null) {
             return null;
@@ -167,9 +167,9 @@ class LaravelHtmlDomNode
     }
 
     /**
-     * @return mixed
+     * @return LaravelHtmlDomNode|null
      */
-    public function prev_sibling(): mixed
+    public function prev_sibling(): ?LaravelHtmlDomNode
     {
         if ($this->parent === null) {
             return null;
@@ -186,9 +186,9 @@ class LaravelHtmlDomNode
 
     /**
      * @param $tag
-     * @return mixed
+     * @return LaravelHtmlDomNode|null
      */
-    public function find_ancestor_tag($tag): mixed
+    public function find_ancestor_tag($tag): ?LaravelHtmlDomNode
     {
         if ($this->parent === null) {
             return null;
@@ -341,7 +341,7 @@ class LaravelHtmlDomNode
     /**
      * @return mixed|string
      */
-    public function makeup()
+    public function makeup(): mixed
     {
         // text, comment, unknown
         if (isset($this->_[HDOM::INFO_TEXT])) {
@@ -387,11 +387,11 @@ class LaravelHtmlDomNode
 
     /**
      * @param $selector
-     * @param $idx
+     * @param  null  $idx
      * @param  bool  $lowercase
-     * @return mixed
+     * @return array|LaravelHtmlDomNode|null
      */
-    public function find($selector, $idx = null, bool $lowercase = false): mixed
+    public function find($selector, $idx = null, bool $lowercase = false): array|LaravelHtmlDomNode|null
     {
         $selectors = $this->parse_selector($selector);
 
