@@ -4,32 +4,79 @@ namespace Toxageek\LaravelHtmlDom;
 
 class LaravelHtmlDomNode
 {
+    /**
+     * @var int
+     */
     public int $nodetype = HDOM::TYPE_TEXT;
+
+    /**
+     * @var string
+     */
     public string $tag = 'text';
+
+    /**
+     * @var array
+     */
     public array $attr = [];
+
+    /**
+     * @var array|null
+     */
     public ?array $children = [];
+
+    /**
+     * @var array|null
+     */
     public ?array $nodes = [];
+
+    /**
+     * @var
+     */
     public $parent;
+
+    /**
+     * @var array
+     */
     public $_ = [];
+
+    /**
+     * @var int
+     */
     public int $tag_start = 0;
+
+    /**
+     * @var LaravelHtmlDom|null
+     */
     private ?LaravelHtmlDom $dom;
 
+    /**
+     * @param  LaravelHtmlDom  $dom
+     */
     public function __construct(LaravelHtmlDom $dom)
     {
         $this->dom = $dom;
         $dom->nodes[] = $this;
     }
 
+    /**
+     *
+     */
     public function __destruct()
     {
         $this->clear();
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return $this->outertext();
     }
 
+    /**
+     * @return void
+     */
     public function clear(): void
     {
         $this->dom = null;
@@ -38,7 +85,11 @@ class LaravelHtmlDomNode
         $this->children = null;
     }
 
-    public function parent($parent = null)
+    /**
+     * @param $parent
+     * @return mixed
+     */
+    public function parent($parent = null): mixed
     {
         // I am SURE that this doesn't work properly.
         // It fails to unset the current node from it's current parents nodes or
@@ -52,12 +103,19 @@ class LaravelHtmlDomNode
         return $this->parent;
     }
 
+    /**
+     * @return bool
+     */
     public function has_child(): bool
     {
         return !empty($this->children);
     }
 
-    public function children($idx = -1)
+    /**
+     * @param  int  $idx
+     * @return array|mixed|null
+     */
+    public function children(int $idx = -1): mixed
     {
         if ($idx === -1) {
             return $this->children;
@@ -66,7 +124,10 @@ class LaravelHtmlDomNode
         return $this->children[$idx] ?? null;
     }
 
-    public function first_child()
+    /**
+     * @return mixed|null
+     */
+    public function first_child(): mixed
     {
         if (count($this->children) > 0) {
             return $this->children[0];
@@ -75,7 +136,10 @@ class LaravelHtmlDomNode
         return null;
     }
 
-    public function last_child()
+    /**
+     * @return false|mixed|null
+     */
+    public function last_child(): mixed
     {
         if (count($this->children) > 0) {
             return end($this->children);
@@ -84,6 +148,9 @@ class LaravelHtmlDomNode
         return null;
     }
 
+    /**
+     * @return mixed
+     */
     public function next_sibling(): mixed
     {
         if ($this->parent === null) {
@@ -99,6 +166,9 @@ class LaravelHtmlDomNode
         return null;
     }
 
+    /**
+     * @return mixed
+     */
     public function prev_sibling(): mixed
     {
         if ($this->parent === null) {
@@ -114,6 +184,10 @@ class LaravelHtmlDomNode
         return null;
     }
 
+    /**
+     * @param $tag
+     * @return mixed
+     */
     public function find_ancestor_tag($tag): mixed
     {
         if ($this->parent === null) {
@@ -133,6 +207,9 @@ class LaravelHtmlDomNode
         return $ancestor;
     }
 
+    /**
+     * @return string
+     */
     public function innertext(): string
     {
         if (isset($this->_[HDOM::INFO_INNER])) {
@@ -152,6 +229,9 @@ class LaravelHtmlDomNode
         return $ret;
     }
 
+    /**
+     * @return string
+     */
     public function outertext(): string
     {
         if ($this->tag === 'root') {
@@ -195,7 +275,10 @@ class LaravelHtmlDomNode
         return $ret;
     }
 
-    public function text()
+    /**
+     * @return mixed|string
+     */
+    public function text(): mixed
     {
         if (isset($this->_[HDOM::INFO_INNER])) {
             return $this->_[HDOM::INFO_INNER];
@@ -245,6 +328,9 @@ class LaravelHtmlDomNode
         return $ret;
     }
 
+    /**
+     * @return array|string
+     */
     public function xmltext(): array|string
     {
         $ret = $this->innertext();
@@ -252,6 +338,9 @@ class LaravelHtmlDomNode
         return str_replace(']]>', '', $ret);
     }
 
+    /**
+     * @return mixed|string
+     */
     public function makeup()
     {
         // text, comment, unknown
@@ -296,7 +385,13 @@ class LaravelHtmlDomNode
         return $ret.$this->_[HDOM::INFO_ENDSPACE].'>';
     }
 
-    public function find($selector, $idx = null, $lowercase = false): mixed
+    /**
+     * @param $selector
+     * @param $idx
+     * @param  bool  $lowercase
+     * @return mixed
+     */
+    public function find($selector, $idx = null, bool $lowercase = false): mixed
     {
         $selectors = $this->parse_selector($selector);
 
@@ -362,7 +457,14 @@ class LaravelHtmlDomNode
         return $found[$idx] ?? null;
     }
 
-    protected function seek($selector, &$ret, $parent_cmd, $lowercase = false): void
+    /**
+     * @param $selector
+     * @param $ret
+     * @param $parent_cmd
+     * @param  bool  $lowercase
+     * @return void
+     */
+    protected function seek($selector, &$ret, $parent_cmd, bool $lowercase = false): void
     {
         [$tag, $id, $class, $attributes, $cmb] = $selector;
         $nodes = [];
@@ -570,6 +672,13 @@ class LaravelHtmlDomNode
         }
     }
 
+    /**
+     * @param $exp
+     * @param $pattern
+     * @param $value
+     * @param $case_sensitivity
+     * @return bool|int
+     */
     protected function match($exp, $pattern, $value, $case_sensitivity): bool|int
     {
         if ($case_sensitivity === 'i') {
@@ -589,6 +698,10 @@ class LaravelHtmlDomNode
         };
     }
 
+    /**
+     * @param $selector_string
+     * @return array
+     */
     protected function parse_selector($selector_string): array
     {
         /**
@@ -732,6 +845,10 @@ class LaravelHtmlDomNode
         return $selectors;
     }
 
+    /**
+     * @param $name
+     * @return array|bool|mixed|string
+     */
     public function __get($name)
     {
         if (isset($this->attr[$name])) {
@@ -747,6 +864,11 @@ class LaravelHtmlDomNode
         };
     }
 
+    /**
+     * @param $name
+     * @param $value
+     * @return void
+     */
     public function __set($name, $value): void
     {
         if ($name === 'outertext') {
@@ -769,6 +891,10 @@ class LaravelHtmlDomNode
         $this->attr[$name] = $value;
     }
 
+    /**
+     * @param $name
+     * @return bool
+     */
     public function __isset($name)
     {
         if ($name === 'innertext' || $name === 'plaintext' || $name === 'outertext') {
@@ -779,6 +905,10 @@ class LaravelHtmlDomNode
         return array_key_exists($name, $this->attr) || isset($this->attr[$name]);
     }
 
+    /**
+     * @param $name
+     * @return void
+     */
     public function __unset($name)
     {
         if (isset($this->attr[$name])) {
@@ -786,7 +916,11 @@ class LaravelHtmlDomNode
         }
     }
 
-    public function convert_text($text)
+    /**
+     * @param $text
+     * @return false|mixed|string
+     */
+    public function convert_text($text): mixed
     {
         $converted_text = $text;
 
@@ -812,11 +946,11 @@ class LaravelHtmlDomNode
 
         // Lets make sure that we don't have that silly BOM issue with any of the utf-8 text we output.
         if ($targetCharset === 'UTF-8') {
-            if (substr($converted_text, 0, 3) === "\xef\xbb\xbf") {
+            if (str_starts_with($converted_text, "\xef\xbb\xbf")) {
                 $converted_text = substr($converted_text, 3);
             }
 
-            if (substr($converted_text, -3) === "\xef\xbb\xbf") {
+            if (str_ends_with($converted_text, "\xef\xbb\xbf")) {
                 $converted_text = substr($converted_text, 0, -3);
             }
         }
@@ -824,6 +958,10 @@ class LaravelHtmlDomNode
         return $converted_text;
     }
 
+    /**
+     * @param $str
+     * @return bool
+     */
     public static function is_utf8($str): bool
     {
         $c = 0;
@@ -869,6 +1007,9 @@ class LaravelHtmlDomNode
         return true;
     }
 
+    /**
+     * @return bool|array
+     */
     public function get_display_size(): bool|array
     {
         $width = -1;
@@ -952,7 +1093,11 @@ class LaravelHtmlDomNode
         ];
     }
 
-    public function save($filepath = ''): string
+    /**
+     * @param  string  $filepath
+     * @return string
+     */
+    public function save(string $filepath = ''): string
     {
         $ret = $this->outertext();
 
@@ -963,6 +1108,10 @@ class LaravelHtmlDomNode
         return $ret;
     }
 
+    /**
+     * @param $class
+     * @return void
+     */
     public function addClass($class): void
     {
         if (is_string($class)) {
@@ -984,6 +1133,10 @@ class LaravelHtmlDomNode
         }
     }
 
+    /**
+     * @param $class
+     * @return bool
+     */
     public function hasClass($class): bool
     {
         if (is_string($class) && isset($this->class)) {
@@ -993,6 +1146,10 @@ class LaravelHtmlDomNode
         return false;
     }
 
+    /**
+     * @param $class
+     * @return void
+     */
     public function removeClass($class = null): void
     {
         if (!isset($this->class)) {
@@ -1018,31 +1175,54 @@ class LaravelHtmlDomNode
         }
     }
 
+    /**
+     * @return array
+     */
     public function getAllAttributes(): array
     {
         return $this->attr;
     }
 
+    /**
+     * @param $name
+     * @return mixed
+     */
     public function getAttribute($name): mixed
     {
         return $this->__get($name);
     }
 
+    /**
+     * @param $name
+     * @param $value
+     * @return void
+     */
     public function setAttribute($name, $value): void
     {
         $this->__set($name, $value);
     }
 
+    /**
+     * @param $name
+     * @return bool
+     */
     public function hasAttribute($name): bool
     {
         return $this->__isset($name);
     }
 
+    /**
+     * @param $name
+     * @return void
+     */
     public function removeAttribute($name): void
     {
         $this->__set($name, null);
     }
 
+    /**
+     * @return void
+     */
     public function remove(): void
     {
         if ($this->parent) {
@@ -1050,6 +1230,10 @@ class LaravelHtmlDomNode
         }
     }
 
+    /**
+     * @param $node
+     * @return void
+     */
     public function removeChild($node): void
     {
         $nidx = array_search($node, $this->nodes, true);
@@ -1078,67 +1262,114 @@ class LaravelHtmlDomNode
         }
     }
 
-    public function getElementById($id)
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public function getElementById($id): mixed
     {
         return $this->find("#$id", 0);
     }
 
-    public function getElementsById($id, $idx = null)
+    /**
+     * @param $id
+     * @param $idx
+     * @return mixed
+     */
+    public function getElementsById($id, $idx = null): mixed
     {
         return $this->find("#$id", $idx);
     }
 
-    public function getElementByTagName($name)
+    /**
+     * @param $name
+     * @return mixed
+     */
+    public function getElementByTagName($name): mixed
     {
         return $this->find($name, 0);
     }
 
-    public function getElementsByTagName($name, $idx = null)
+    /**
+     * @param $name
+     * @param $idx
+     * @return mixed
+     */
+    public function getElementsByTagName($name, $idx = null): mixed
     {
         return $this->find($name, $idx);
     }
 
-    public function parentNode()
+    /**
+     * @return mixed
+     */
+    public function parentNode(): mixed
     {
         return $this->parent();
     }
 
-    public function childNodes($idx = -1)
+    /**
+     * @param  int  $idx
+     * @return array|mixed|null
+     */
+    public function childNodes(int $idx = -1): mixed
     {
         return $this->children($idx);
     }
 
-    public function firstChild()
+    /**
+     * @return mixed|null
+     */
+    public function firstChild(): mixed
     {
         return $this->first_child();
     }
 
-    public function lastChild()
+    /**
+     * @return false|mixed|null
+     */
+    public function lastChild(): mixed
     {
         return $this->last_child();
     }
 
-    public function nextSibling()
+    /**
+     * @return mixed
+     */
+    public function nextSibling(): mixed
     {
         return $this->next_sibling();
     }
 
-    public function previousSibling()
+    /**
+     * @return mixed
+     */
+    public function previousSibling(): mixed
     {
         return $this->prev_sibling();
     }
 
+    /**
+     * @return bool
+     */
     public function hasChildNodes(): bool
     {
         return $this->has_child();
     }
 
+    /**
+     * @return string
+     */
     public function nodeName(): string
     {
         return $this->tag;
     }
 
-    public function appendChild($node)
+    /**
+     * @param $node
+     * @return mixed
+     */
+    public function appendChild($node): mixed
     {
         $node->parent($this);
         return $node;

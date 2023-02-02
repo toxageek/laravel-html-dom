@@ -4,32 +4,109 @@ namespace Toxageek\LaravelHtmlDom;
 
 class LaravelHtmlDom
 {
+    /**
+     * @var LaravelHtmlDomNode|null
+     */
     public ?LaravelHtmlDomNode $root = null;
+
+    /**
+     * @var array
+     */
     public array $nodes = [];
+
+    /**
+     * @var string|null
+     */
     public string|null $callback = null;
+
+    /**
+     * @var bool
+     */
     public bool $lowercase = false;
+
+    /**
+     * @var
+     */
     public $original_size;
+
+    /**
+     * @var
+     */
     public $size;
 
+    /**
+     * @var
+     */
     protected $pos;
+
+    /**
+     * @var string|null
+     */
     protected ?string $doc;
+
+    /**
+     * @var
+     */
     protected $char;
 
+    /**
+     * @var int
+     */
     protected int $cursor;
+
+    /**
+     * @var
+     */
     protected $parent;
+
+    /**
+     * @var array
+     */
     protected array $noise = [];
+
+    /**
+     * @var string
+     */
     protected string $token_blank = " \t\r\n";
+
+    /**
+     * @var string
+     */
     protected string $token_equal = ' =/>';
+
+    /**
+     * @var string
+     */
     protected string $token_slash = " />\r\n\t";
+
+    /**
+     * @var string
+     */
     protected string $token_attr = ' >';
 
+    /**
+     * @var string
+     */
     public string $_charset = '';
+
+    /**
+     * @var string
+     */
     public string $_target_charset = '';
 
+    /**
+     * @var string|mixed|null
+     */
     protected string $default_br_text;
 
+    /**
+     * @var string|mixed|null
+     */
     public string $default_span_text;
 
+    /**
+     * @var array|int[]
+     */
     protected array $self_closing_tags = [
         'area' => 1,
         'base' => 1,
@@ -47,6 +124,9 @@ class LaravelHtmlDom
         'wbr' => 1
     ];
 
+    /**
+     * @var array|int[]
+     */
     protected array $block_tags = [
         'body' => 1,
         'div' => 1,
@@ -56,6 +136,9 @@ class LaravelHtmlDom
         'table' => 1
     ];
 
+    /**
+     * @var array|int[][]
+     */
     protected array $optional_closing_tags = [
         // Not optional, see
         // https://www.w3.org/TR/html/textlevel-semantics.html#the-b-element
@@ -76,14 +159,23 @@ class LaravelHtmlDom
         'tr' => ['td' => 1, 'th' => 1, 'tr' => 1],
     ];
 
+    /**
+     * @param  null  $str
+     * @param  bool  $lowercase
+     * @param  bool  $forceTagsClosed
+     * @param  bool  $stripRN
+     * @param  int  $options
+     * @param  string|null  $defaultBRText
+     * @param  string|null  $defaultSpanText
+     */
     public function __construct(
         $str = null,
-        $lowercase = true,
-        $forceTagsClosed = true,
-        $stripRN = true,
-        $options = 0,
-        $defaultBRText = null,
-        $defaultSpanText = null
+        bool $lowercase = true,
+        bool $forceTagsClosed = true,
+        bool $stripRN = true,
+        int $options = 0,
+        ?string $defaultBRText = null,
+        ?string $defaultSpanText = null
     ) {
 
         if (is_null($defaultBRText)) {
@@ -118,16 +210,26 @@ class LaravelHtmlDom
         $this->_target_charset = HDOM::TARGET_CHARSET();
     }
 
+    /**
+     *
+     */
     public function __destruct()
     {
         $this->clear();
     }
 
+    /**
+     * @param $str
+     * @param  bool  $lowercase
+     * @param  bool  $stripRN
+     * @param  int  $options
+     * @return $this
+     */
     protected function load(
         $str,
-        $lowercase = true,
-        $stripRN = true,
-        $options = 0
+        bool $lowercase = true,
+        bool $stripRN = true,
+        int $options = 0
     ): self
     {
         // prepare
@@ -174,6 +276,9 @@ class LaravelHtmlDom
         return $this;
     }
 
+    /**
+     * @return bool
+     */
     public function load_file(): bool
     {
         $args = func_get_args();
@@ -187,16 +292,27 @@ class LaravelHtmlDom
         return false;
     }
 
+    /**
+     * @param $function_name
+     * @return void
+     */
     public function set_callback($function_name): void
     {
         $this->callback = $function_name;
     }
 
+    /**
+     * @return void
+     */
     public function remove_callback(): void
     {
         $this->callback = null;
     }
 
+    /**
+     * @param $filepath
+     * @return string
+     */
     public function save($filepath = '')
     {
         $ret = $this->root->innertext();
@@ -208,11 +324,20 @@ class LaravelHtmlDom
         return $ret;
     }
 
-    public function find($selector, $idx = null, $lowercase = false)
+    /**
+     * @param $selector
+     * @param  int|null  $idx
+     * @param  bool  $lowercase
+     * @return mixed
+     */
+    public function find($selector, ?int $idx = null, bool $lowercase = false)
     {
         return $this->root->find($selector, $idx, $lowercase);
     }
 
+    /**
+     * @return void
+     */
     public function clear(): void
     {
         if (isset($this->nodes)) {
@@ -245,6 +370,11 @@ class LaravelHtmlDom
         unset($this->doc, $this->noise);
     }
 
+    /**
+     * @param $str
+     * @param $lowercase
+     * @return void
+     */
     protected function prepare($str, $lowercase = true): void
     {
         $this->clear();
@@ -267,6 +397,9 @@ class LaravelHtmlDom
         }
     }
 
+    /**
+     * @return bool
+     */
     protected function parse(): bool
     {
         while (true) {
@@ -288,6 +421,9 @@ class LaravelHtmlDom
         }
     }
 
+    /**
+     * @return mixed|string|null
+     */
     protected function parse_charset()
     {
 
@@ -370,6 +506,9 @@ class LaravelHtmlDom
         return $this->_charset = $charset;
     }
 
+    /**
+     * @return bool
+     */
     protected function read_tag(): bool
     {
         // Set end position if no further tags found
@@ -655,6 +794,12 @@ class LaravelHtmlDom
         return true;
     }
 
+    /**
+     * @param $node
+     * @param $name
+     * @param $space
+     * @return void
+     */
     protected function parse_attr($node, $name, &$space): void
     {
         $is_duplicate = isset($node->attr[$name]);
@@ -700,6 +845,11 @@ class LaravelHtmlDom
         }
     }
 
+    /**
+     * @param $node
+     * @param $is_child
+     * @return void
+     */
     protected function link_nodes(&$node, $is_child): void
     {
         $node->parent = $this->parent;
@@ -709,6 +859,10 @@ class LaravelHtmlDom
         }
     }
 
+    /**
+     * @param $tag
+     * @return bool
+     */
     protected function as_text_node($tag): bool
     {
         $node = new LaravelHtmlDomNode($this);
@@ -719,12 +873,20 @@ class LaravelHtmlDom
         return true;
     }
 
+    /**
+     * @param $chars
+     * @return void
+     */
     protected function skip($chars): void
     {
         $this->pos += strspn($this->doc, $chars, $this->pos);
         $this->char = ($this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
     }
 
+    /**
+     * @param $chars
+     * @return string
+     */
     protected function copy_skip($chars): string
     {
         $pos = $this->pos;
@@ -737,6 +899,10 @@ class LaravelHtmlDom
         return substr($this->doc, $pos, $len);
     }
 
+    /**
+     * @param $chars
+     * @return string
+     */
     protected function copy_until($chars): string
     {
         $pos = $this->pos;
@@ -746,6 +912,10 @@ class LaravelHtmlDom
         return substr($this->doc, $pos, $len);
     }
 
+    /**
+     * @param $char
+     * @return string
+     */
     protected function copy_until_char($char): string
     {
         if ($this->char === null) {
@@ -769,6 +939,11 @@ class LaravelHtmlDom
         return substr($this->doc, $pos_old, $pos - $pos_old);
     }
 
+    /**
+     * @param $pattern
+     * @param $remove_tag
+     * @return void
+     */
     protected function remove_noise($pattern, $remove_tag = false): void
     {
         $count = preg_match_all(
@@ -794,6 +969,10 @@ class LaravelHtmlDom
         }
     }
 
+    /**
+     * @param $text
+     * @return mixed
+     */
     public function restore_noise($text): mixed
     {
         while (($pos = strpos($text, '___noise___')) !== false) {
@@ -834,7 +1013,11 @@ class LaravelHtmlDom
         return $text;
     }
 
-    public function search_noise($text)
+    /**
+     * @param $text
+     * @return mixed|null
+     */
+    public function search_noise($text): mixed
     {
         foreach ($this->noise as $noiseElement) {
             if (str_contains($noiseElement, $text)) {
@@ -845,21 +1028,37 @@ class LaravelHtmlDom
         return null;
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return $this->root->innertext();
     }
 
+    /**
+     * @param $name
+     * @return bool
+     */
     public function __isset($name): bool
     {
         return method_exists($this, $name) && !is_null($this->$name());
     }
 
+    /**
+     * @param  string  $name
+     * @param $value
+     * @return void
+     */
     public function __set(string $name, $value): void
     {
         $this->{$name} = $value;
     }
 
+    /**
+     * @param $name
+     * @return mixed|string
+     */
     public function __get($name)
     {
         if ($name === 'innertext' || $name === 'outertext') {
@@ -881,32 +1080,57 @@ class LaravelHtmlDom
         return $this->{$name};
     }
 
-    public function childNodes($idx = -1)
+    /**
+     * @param  int  $idx
+     * @return array|mixed|null
+     */
+    public function childNodes(int $idx = -1): mixed
     {
         return $this->root->childNodes($idx);
     }
 
-    public function firstChild()
+    /**
+     * @return mixed|null
+     */
+    public function firstChild(): mixed
     {
         return $this->root->first_child();
     }
 
-    public function lastChild()
+    /**
+     * @return false|mixed|null
+     */
+    public function lastChild(): mixed
     {
         return $this->root->last_child();
     }
 
+    /**
+     * @param $name
+     * @param $value
+     * @return mixed
+     */
     public function createElement($name, $value = null): mixed
     {
         return self::str_get_html("<$name>$value</$name>")?->firstChild();
     }
 
+    /**
+     * @param $str
+     * @param  bool  $lowercase
+     * @param  bool  $forceTagsClosed
+     * @param $target_charset
+     * @param  bool  $stripRN
+     * @param $defaultBRText
+     * @param $defaultSpanText
+     * @return LaravelHtmlDom|null
+     */
     public static function str_get_html(
         $str,
-        $lowercase = true,
-        $forceTagsClosed = true,
+        bool $lowercase = true,
+        bool $forceTagsClosed = true,
         $target_charset = null,
-        $stripRN = true,
+        bool $stripRN = true,
         $defaultBRText = null,
         $defaultSpanText = null
     ): ?self
@@ -941,16 +1165,30 @@ class LaravelHtmlDom
         return $dom->load($str, $lowercase, $stripRN);
     }
 
+    /**
+     * @param $url
+     * @param  bool  $use_include_path
+     * @param $context
+     * @param  int  $offset
+     * @param  int  $maxLen
+     * @param  bool  $lowercase
+     * @param  bool  $forceTagsClosed
+     * @param $target_charset
+     * @param  bool  $stripRN
+     * @param $defaultBRText
+     * @param $defaultSpanText
+     * @return LaravelHtmlDom|null
+     */
     public static function file_get_html(
         $url,
-        $use_include_path = false,
+        bool $use_include_path = false,
         $context = null,
-        $offset = 0,
-        $maxLen = -1,
-        $lowercase = true,
-        $forceTagsClosed = true,
+        int $offset = 0,
+        int $maxLen = -1,
+        bool $lowercase = true,
+        bool $forceTagsClosed = true,
         $target_charset = null,
-        $stripRN = true,
+        bool $stripRN = true,
         $defaultBRText = null,
         $defaultSpanText = null
     ): ?self
@@ -1002,31 +1240,56 @@ class LaravelHtmlDom
         return $dom->load($contents, $lowercase, $stripRN);
     }
 
-    public function createTextNode($value)
+    /**
+     * @param $value
+     * @return false|mixed
+     */
+    public function createTextNode($value): mixed
     {
         return @end(self::str_get_html($value)->nodes);
     }
 
-    public function getElementById($id)
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public function getElementById($id): mixed
     {
         return $this->find("#$id", 0);
     }
 
-    public function getElementsById($id, $idx = null)
+    /**
+     * @param $id
+     * @param $idx
+     * @return mixed
+     */
+    public function getElementsById($id, $idx = null): mixed
     {
         return $this->find("#$id", $idx);
     }
 
-    public function getElementByTagName($name)
+    /**
+     * @param $name
+     * @return mixed
+     */
+    public function getElementByTagName($name): mixed
     {
         return $this->find($name, 0);
     }
 
-    public function getElementsByTagName($name, $idx = -1)
+    /**
+     * @param $name
+     * @param  int|null  $idx
+     * @return mixed
+     */
+    public function getElementsByTagName($name, ?int $idx = -1): mixed
     {
         return $this->find($name, $idx);
     }
 
+    /**
+     * @return void
+     */
     public function loadFile(): void
     {
         $args = func_get_args();
