@@ -32,7 +32,7 @@ class LaravelHtmlDomNode
     /**
      * @var LaravelHtmlDomNode|null
      */
-    public ?LaravelHtmlDomNode $parent;
+    public ?LaravelHtmlDomNode $parent = null;
 
     /**
      * @var array
@@ -47,7 +47,7 @@ class LaravelHtmlDomNode
     /**
      * @var LaravelHtmlDom|null
      */
-    private ?LaravelHtmlDom $dom;
+    private ?LaravelHtmlDom $dom = null;
 
     /**
      * @param  LaravelHtmlDom  $dom

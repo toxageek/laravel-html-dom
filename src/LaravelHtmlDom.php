@@ -27,22 +27,22 @@ class LaravelHtmlDom
     /**
      * @var int|null
      */
-    public ?int $original_size;
+    public ?int $original_size = null;
 
     /**
      * @var int|null
      */
-    public ?int $size;
+    public ?int $size = null;
 
     /**
      * @var int|null
      */
-    protected ?int $pos;
+    protected ?int $pos = null;
 
     /**
      * @var string|null
      */
-    protected ?string $doc;
+    protected ?string $doc = null;
 
     /**
      * @var
