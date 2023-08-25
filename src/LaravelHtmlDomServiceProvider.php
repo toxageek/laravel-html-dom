@@ -6,7 +6,6 @@ use Illuminate\Support\ServiceProvider;
 
 class LaravelHtmlDomServiceProvider extends ServiceProvider
 {
-
     public function boot(): void
     {
         $this->publishes([
